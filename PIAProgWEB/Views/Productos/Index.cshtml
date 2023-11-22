@@ -1,0 +1,159 @@
+﻿@model IEnumerable<PIAProgWEB.Models.dbModels.Producto>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .category-list {
+        position: fixed;
+        top: 55px;
+        left: 0;
+        bottom: 0;
+        width: 200px;
+        background-color: #343a40;
+        padding-top: 20px;
+        z-index: 999;
+    }
+
+        .category-list a {
+            padding: 10px 15px;
+            display: block;
+            color: white;
+            text-decoration: none;
+        }
+
+            .category-list a:hover {
+                background-color: #007bff;
+                /* Color de fondo al pasar el mouse por encima de las categorías */
+                color: white;
+            }
+
+    .select-container {
+        margin-top: 20px; /* Ajusta según sea necesario */
+    }
+
+    #gender {
+        position: relative;
+        z-index: 1000; /* Asegura que el select esté por encima de otros elementos */
+    }
+
+    .options {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+
+        .options a {
+            display: block;
+            padding: 8px;
+            text-decoration: none;
+            color: #333;
+        }
+</style>
+
+<h1>Index</h1>
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div class="container mt-4">
+    <div class="select-container">
+        <select id="gender" onchange="mostrarOpciones()">
+            <option value="mujer">Mujer</option>
+            <option value="hombre">Hombre</option>
+        </select>
+    </div>
+    <div class="category-list" id="hombre-options">
+        <a href="#">Tenis</a>
+        <a href="#">Camisas</a>
+        <a href="#">Pantalones</a>
+        <a href="#">Chaquetas</a>
+        <!-- Agrega más categorías según sea necesario para hombres -->
+    </div>
+
+    <div class="category-list" id="mujer-options">
+        <a href="#">Blusas</a>
+        <a href="#">Vestidos</a>
+        <a href="#">Pantalones</a>
+        <!-- Agrega más categorías según sea necesario para mujeres -->
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NombreProducto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descripción)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Precio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Imagen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Categoria)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreProducto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripción)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Precio)
+                </td>
+                <td>
+                    <img src="@Html.DisplayFor(modelItem => item.Imagen)">
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Categoria.CategoriaId)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductoId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductoId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProductoId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+
+    function mostrarOpciones() {
+        var genderSelect = document.getElementById("gender");
+        var hombreOptions = document.getElementById("hombre-options");
+        var mujerOptions = document.getElementById("mujer-options");
+
+        // Oculta todas las opciones
+        hombreOptions.style.display = "none";
+        mujerOptions.style.display = "none";
+
+        // Muestra las opciones correspondientes según la selección
+        if (genderSelect.value === "hombre") {
+            hombreOptions.style.display = "block";
+        } else if (genderSelect.value === "mujer") {
+            mujerOptions.style.display = "block";
+        }
+    }
+
+</script>
+

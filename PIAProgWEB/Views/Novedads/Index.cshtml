@@ -83,10 +83,12 @@
 
 <div class="table-container">
     <h1>Novedades</h1>
-
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Create New</a>
-    </p>
+    @if (User.IsInRole("Admin"))
+    {
+        <p>
+            <a asp-action="Create" class="btn btn-primary">Create New</a>
+        </p>
+    }
     <table>
         <thead>
             <tr>
@@ -96,7 +98,10 @@
                 <th>
                     Imagen
                 </th>
-                <th>Action</th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th>Action</th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -116,9 +121,12 @@
                         }
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.IdNovedad" class="btn btn-warning action-links">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.IdNovedad" class="btn btn-info action-links">Details</a>
-                        <a asp-action="Delete" asp-route-id="@item.IdNovedad" class="btn btn-danger action-links">Delete</a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.IdNovedad" class="btn btn-warning action-links">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.IdNovedad" class="btn btn-info action-links">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.IdNovedad" class="btn btn-danger action-links">Delete</a>
+                        }
                     </td>
                 </tr>
             }

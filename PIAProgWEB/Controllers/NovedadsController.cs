@@ -153,7 +153,9 @@ namespace PIAProgWEB.Controllers
 
             var novedad = await _context.Novedads
                 .Include(n => n.IdEstacionNavigation)
+                .Include(n => n.ImagenNovedads)
                 .FirstOrDefaultAsync(m => m.IdNovedad == id);
+
             if (novedad == null)
             {
                 return NotFound();
@@ -161,6 +163,7 @@ namespace PIAProgWEB.Controllers
 
             return View(novedad);
         }
+
         [Authorize(Roles = "Admin")]
         // POST: Novedads/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -169,15 +172,25 @@ namespace PIAProgWEB.Controllers
         {
             if (_context.Novedads == null)
             {
-                return Problem("Entity set 'ProyectoProWebContext.Novedads'  is null.");
-            }
-            var novedad = await _context.Novedads.FindAsync(id);
-            if (novedad != null)
-            {
-                _context.Novedads.Remove(novedad);
+                return Problem("Entity set 'ProyectoProWebContext.Novedads' is null.");
             }
 
-            await _context.SaveChangesAsync();
+            var novedad = await _context.Novedads
+                .Include(n => n.ImagenNovedads) // Incluye las imágenes asociadas
+                .FirstOrDefaultAsync(m => m.IdNovedad == id);
+
+            if (novedad != null)
+            {
+                // Elimina las imágenes asociadas
+                foreach (var imagen in novedad.ImagenNovedads)
+                {
+                    _context.ImagenNovedads.Remove(imagen);
+                }
+
+                _context.Novedads.Remove(novedad);
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using PIAProgWEB.Models;
 using System.Diagnostics;
 
@@ -27,6 +28,12 @@ namespace PIAProgWEB.Controllers
         {
             return View();
         }
+
+        public IActionResult Novedades()
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

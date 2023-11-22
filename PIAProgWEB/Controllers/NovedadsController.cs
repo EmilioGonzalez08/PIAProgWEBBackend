@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using PIAProgWEB.Models;
 using PIAProgWEB.Models.dbModels;
 
 namespace PIAProgWEB.Controllers
+
 {
     public class NovedadsController : Controller
     {
@@ -44,7 +46,7 @@ namespace PIAProgWEB.Controllers
 
             return View(novedad);
         }
-
+        [Authorize (Roles = "Admin")]
         // GET: Novedads/Create
         public IActionResult Create()
         {
@@ -75,7 +77,7 @@ namespace PIAProgWEB.Controllers
             ViewData["IdEstacion"] = new SelectList(_context.Estaciones, "IdEstacion", "IdEstacion", novedad.IdEstacion);
             return View(novedad);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: Novedads/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -92,7 +94,7 @@ namespace PIAProgWEB.Controllers
             ViewData["IdEstacion"] = new SelectList(_context.Estaciones, "IdEstacion", "IdEstacion", novedad.IdEstacion);
             return View(novedad);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: Novedads/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -128,7 +130,7 @@ namespace PIAProgWEB.Controllers
             ViewData["IdEstacion"] = new SelectList(_context.Estaciones, "IdEstacion", "IdEstacion", novedad.IdEstacion);
             return View(novedad);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: Novedads/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -147,7 +149,7 @@ namespace PIAProgWEB.Controllers
 
             return View(novedad);
         }
-
+        [Authorize(Roles = "Admin")]
         // POST: Novedads/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

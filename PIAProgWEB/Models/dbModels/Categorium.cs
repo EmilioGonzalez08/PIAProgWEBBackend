@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace PIAProgWEB.Models.dbModels
+{
+    public partial class Categorium
+    {
+        public Categorium()
+        {
+            Productos = new HashSet<Producto>();
+            Subcategoria = new HashSet<Subcategorium>();
+        }
+
+        [Key]
+        [Column("CategoriaID")]
+        public int CategoriaId { get; set; }
+        [StringLength(50)]
+        public string Categoria { get; set; } = null!;
+
+        [InverseProperty("Categoria")]
+        public virtual ICollection<Producto> Productos { get; set; }
+        [InverseProperty("Categoria")]
+        public virtual ICollection<Subcategorium> Subcategoria { get; set; }
+    }
+}

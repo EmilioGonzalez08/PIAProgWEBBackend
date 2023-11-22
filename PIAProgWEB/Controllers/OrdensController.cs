@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIAProgWEB.Models.dbModels;
@@ -160,14 +156,14 @@ namespace PIAProgWEB.Controllers
             {
                 _context.Ordens.Remove(orden);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool OrdenExists(int id)
         {
-          return (_context.Ordens?.Any(e => e.OrdenId == id)).GetValueOrDefault();
+            return (_context.Ordens?.Any(e => e.OrdenId == id)).GetValueOrDefault();
         }
     }
 }

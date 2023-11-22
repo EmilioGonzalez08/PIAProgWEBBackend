@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace PIAProgWEB.Models.dbModels
 {
-    public partial class ProyectoProWebContext : IdentityDbContext <ApplicationUser, IdentityRole<int>, int>
+    public partial class ProyectoProWebContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
     {
         public ProyectoProWebContext()
         {
@@ -32,7 +29,7 @@ namespace PIAProgWEB.Models.dbModels
         public virtual DbSet<Subcategorium> Subcategoria { get; set; } = null!;
         public virtual DbSet<Talla> Tallas { get; set; } = null!;
 
-        
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

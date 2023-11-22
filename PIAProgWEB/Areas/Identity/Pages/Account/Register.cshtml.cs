@@ -2,23 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using PIAProgWEB.Models.dbModels;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace PIAProgWEB.Areas.Identity.Pages.Account
 {
@@ -29,7 +20,7 @@ namespace PIAProgWEB.Areas.Identity.Pages.Account
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-    
+
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -84,7 +75,7 @@ namespace PIAProgWEB.Areas.Identity.Pages.Account
             [Display(Name = "Direccion Casa")]
 
             public string Direccion { get; set; }
-            
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -136,7 +127,7 @@ namespace PIAProgWEB.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                 
+
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

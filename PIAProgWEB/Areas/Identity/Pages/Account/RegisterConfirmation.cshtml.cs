@@ -2,16 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using PIAProgWEB.Models.dbModels;
+using System.Text;
 
 namespace PIAProgWEB.Areas.Identity.Pages.Account
 {
@@ -19,7 +16,7 @@ namespace PIAProgWEB.Areas.Identity.Pages.Account
     public class RegisterConfirmationModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        
+
 
         public RegisterConfirmationModel(UserManager<ApplicationUser> userManager)
         {

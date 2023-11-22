@@ -1,41 +1,130 @@
 ﻿@model IEnumerable<PIAProgWEB.Models.dbModels.Novedad>
 
+
 @{
     ViewData["Title"] = "Novedades";
 }
 
-<h1>Novedades</h1>
+<style>
+    .table-container {
+        margin-top: 20px;
+    }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Descripcion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdEstacionNavigation)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdEstacionNavigation.IdEstacion)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdNovedad">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdNovedad">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdNovedad">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: collapse;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        margin: 0;
+        font-size: 12px;
+        min-width: 100%;
+        display: table;
+    }
+
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    tr:hover {
+        background-color: rgba(255, 223, 186, 0.3);
+    }
+
+    .action-links {
+        text-decoration: none;
+        margin-right: 10px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: 5px;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-warning {
+        color: #212529;
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+    .btn-info {
+        color: #fff;
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .btn-danger {
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+</style>
+
+<div class="table-container">
+    <h1>Novedades</h1>
+
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Create New</a>
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Descripcion)
+                </th>
+                <th>
+                    Imagen
+                </th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Descripcion)
+                    </td>
+                    <td>
+                        @if (ViewBag.ImagenesPorNovedad != null && ViewBag.ImagenesPorNovedad.ContainsKey(item.IdNovedad))
+                        {
+                            foreach (var imagen in ViewBag.ImagenesPorNovedad[item.IdNovedad])
+                            {
+                                <img src="@imagen.Imagen" class="small-image" alt="Imagen de la novedad">
+                            }
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.IdNovedad" class="btn btn-warning action-links">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.IdNovedad" class="btn btn-info action-links">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.IdNovedad" class="btn btn-danger action-links">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+
+</div>

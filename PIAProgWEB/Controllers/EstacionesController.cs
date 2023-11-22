@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIAProgWEB.Models.dbModels;
 
 namespace PIAProgWEB.Controllers
 {
-    [Authorize (Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class EstacionesController : Controller
     {
         private readonly ProyectoProWebContext _context;
@@ -23,9 +18,9 @@ namespace PIAProgWEB.Controllers
         // GET: Estaciones
         public async Task<IActionResult> Index()
         {
-              return _context.Estaciones != null ? 
-                          View(await _context.Estaciones.ToListAsync()) :
-                          Problem("Entity set 'ProyectoProWebContext.Estaciones'  is null.");
+            return _context.Estaciones != null ?
+                        View(await _context.Estaciones.ToListAsync()) :
+                        Problem("Entity set 'ProyectoProWebContext.Estaciones'  is null.");
         }
 
         // GET: Estaciones/Details/5
@@ -151,14 +146,14 @@ namespace PIAProgWEB.Controllers
             {
                 _context.Estaciones.Remove(estacione);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool EstacioneExists(int id)
         {
-          return (_context.Estaciones?.Any(e => e.IdEstacion == id)).GetValueOrDefault();
+            return (_context.Estaciones?.Any(e => e.IdEstacion == id)).GetValueOrDefault();
         }
     }
 }

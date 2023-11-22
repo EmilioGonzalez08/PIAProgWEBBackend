@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIAProgWEB.Models;
@@ -162,14 +158,14 @@ namespace PIAProgWEB.Controllers
             {
                 _context.ImagenNovedads.Remove(imagenNovedad);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ImagenNovedadExists(int id)
         {
-          return (_context.ImagenNovedads?.Any(e => e.IdImagen == id)).GetValueOrDefault();
+            return (_context.ImagenNovedads?.Any(e => e.IdImagen == id)).GetValueOrDefault();
         }
     }
 }

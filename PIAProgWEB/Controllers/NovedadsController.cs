@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +20,26 @@ namespace PIAProgWEB.Controllers
         // GET: Novedads
         public async Task<IActionResult> Index()
         {
-            var proyectoProWebContext = _context.Novedads.Include(n => n.IdEstacionNavigation);
-            return View(await proyectoProWebContext.ToListAsync());
-        }
+            var novedades = await _context.Novedads
+                .Include(n => n.IdEstacionNavigation)
+                .Include(n => n.ImagenNovedads)
+                .ToListAsync();
 
+            // Obtener imágenes para cada novedad
+            var imagenesPorNovedad = new Dictionary<int, List<ImagenNovedad>>();
+            foreach (var novedad in novedades)
+            {
+                var imagenes = await _context.ImagenNovedads
+                    .Where(imagen => imagen.IdNovedad == novedad.IdNovedad)
+                    .ToListAsync();
+
+                imagenesPorNovedad.Add(novedad.IdNovedad, imagenes);
+            }
+
+            ViewBag.ImagenesPorNovedad = imagenesPorNovedad;
+
+            return View(novedades);
+        }
         // GET: Novedads/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -46,7 +58,7 @@ namespace PIAProgWEB.Controllers
 
             return View(novedad);
         }
-        [Authorize (Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         // GET: Novedads/Create
         public IActionResult Create()
         {
@@ -164,14 +176,14 @@ namespace PIAProgWEB.Controllers
             {
                 _context.Novedads.Remove(novedad);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool NovedadExists(int id)
         {
-          return (_context.Novedads?.Any(e => e.IdNovedad == id)).GetValueOrDefault();
+            return (_context.Novedads?.Any(e => e.IdNovedad == id)).GetValueOrDefault();
         }
     }
 }

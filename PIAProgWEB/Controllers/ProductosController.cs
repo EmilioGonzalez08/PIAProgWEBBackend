@@ -24,7 +24,10 @@ namespace PIAProgWEB.Controllers
         {
             var proyectoProWebContext = _context.Productos.Include(p => p.Categoria);
             return View(await proyectoProWebContext.ToListAsync());
+
+ 
         }
+
 
         // GET: Productos/Details/5
         public async Task<IActionResult> Details(int? id)

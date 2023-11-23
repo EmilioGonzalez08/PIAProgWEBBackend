@@ -27,6 +27,8 @@ namespace PIAProgWEB.Models.dbModels
         [StringLength(255)]
         public string Imagen { get; set; } = null!;
 
+
+
         [ForeignKey("CategoriaId")]
         [InverseProperty("Productos")]
         public virtual Categorium Categoria { get; set; } = null!;

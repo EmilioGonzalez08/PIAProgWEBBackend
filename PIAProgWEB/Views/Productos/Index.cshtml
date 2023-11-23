@@ -11,6 +11,19 @@
     <a asp-action="Create">Create New</a>
 </p>
 
+<form method="get" action="@Url.Action("Index")">
+    <label for="categoria">Filter by Category:</label>
+    <select name="categoria" id="categoria">
+        <option value="">All Categories</option>
+        @foreach (var categoria in Model.Select(p => p.Categoria).Distinct())
+        {
+            <option value="@categoria.Categoria">@categoria.Categoria</option>
+        }
+    </select>
+    <button type="submit">Apply Filter</button>
+</form>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -49,7 +62,7 @@
                     <img src="@Html.DisplayFor(modelItem => item.Imagen)">
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Categoria.CategoriaId)
+                    @Html.DisplayFor(modelItem => item.Categoria.Categoria)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ProductoId">Edit</a> |
@@ -60,5 +73,3 @@
         }
     </tbody>
 </table>
-
-

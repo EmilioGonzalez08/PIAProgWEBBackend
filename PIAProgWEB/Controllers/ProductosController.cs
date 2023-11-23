@@ -19,15 +19,21 @@ namespace PIAProgWEB.Controllers
             _context = context;
         }
 
-        // GET: Productos
-        public async Task<IActionResult> Index()
+        //GET: Productos
+        public async Task<IActionResult> Index(string categoria)
         {
-            var proyectoProWebContext = _context.Productos.Include(p => p.Categoria);
-            return View(await proyectoProWebContext.ToListAsync());
+            IQueryable<Producto> productosQuery = _context.Productos.Include(p => p.Categoria);
 
- 
+            if (!string.IsNullOrEmpty(categoria))
+            {
+                categoria = categoria.ToLower(); // o .ToUpper() según tu preferencia
+                productosQuery = productosQuery.Where(p => p.Categoria.Categoria != null && p.Categoria.Categoria.ToLower() == categoria);
+            }
+
+            var productos = await productosQuery.ToListAsync();
+
+            return View(productos);
         }
-
 
         // GET: Productos/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -51,7 +57,7 @@ namespace PIAProgWEB.Controllers
         // GET: Productos/Create
         public IActionResult Create()
         {
-            ViewData["CategoriaId"] = new SelectList(_context.Categoria, "CategoriaId", "CategoriaId");
+            ViewData["CategoriaId"] = new SelectList(_context.Categoria, "CategoriaId", "Categoria");
             return View();
         }
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIAProgWEB.Models.dbModels;
 
@@ -11,9 +12,10 @@ using PIAProgWEB.Models.dbModels;
 namespace PIAProgWEB.Migrations
 {
     [DbContext(typeof(ProyectoProWebContext))]
-    partial class ProyectoProWebContextModelSnapshot : ModelSnapshot
+    [Migration("20231122224115_prod")]
+    partial class prod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

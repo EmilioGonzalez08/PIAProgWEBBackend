@@ -1,4 +1,4 @@
-﻿@model ProductoCreateHR
+﻿@model PIAProgWEB.Models.dbModels.Producto
 
 @{
     ViewData["Title"] = "Create";
@@ -27,23 +27,15 @@
                 <input asp-for="Precio" class="form-control" />
                 <span asp-validation-for="Precio" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <label asp-for="CategoriaId" class="control-label"></label>
-                <select asp-for="CategoriaId" class="form-control" asp-items="ViewBag.CategoriaId"></select>
+                <select asp-for="CategoriaId" class ="form-control" asp-items="ViewBag.CategoriaId"></select>
             </div>
-
-            <div class="form-group">
-                <label asp-for="IdSubcategoria" class="control-label"></label>
-                <select asp-for="IdSubcategoria" class="form-control" asp-items="ViewBag.IdSubcategoria"></select>
-            </div>
-
             <div class="form-group">
                 <label asp-for="Imagen" class="control-label"></label>
                 <input asp-for="Imagen" class="form-control" />
                 <span asp-validation-for="Imagen" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

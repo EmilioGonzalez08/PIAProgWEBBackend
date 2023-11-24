@@ -169,40 +169,27 @@
     }
 </tbody>
         </table>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <!-- Button for Admin to redirect to ProductoTallas -->
+            <p class="action-buttons">
+                <a asp-action="Index" asp-controller="ProductoTallas" class="btn btn-primary">Asignar Tallas</a>
+            </p>
+        }
+
     </div>
 </div>
 
 @section scripts {
     <script>
-        $(document).ready(function () {
-            $('.add-to-cart-button').on('click', function () {
-                var productId = $(this).data('product-id');
 
-                // Realiza una solicitud al servidor para agregar el producto al carrito
-                $.ajax({
-                    type: 'POST',
-                    url: '/Carritoes/Index', // Reemplaza con la ruta correcta a tu acción
-                    data: { productId: productId },
-                    success: function (result) {
-                        // Maneja la respuesta del servidor (puede ser redirección, actualización de carrito, etc.)
-                        console.log(result);
-                        
-                        // Redirige al usuario a la página de carrito directamente
-                        window.location.href = '/Carritoes/Index';
-                    },
-                    error: function (error) {
-                        console.error('Error al agregar al carrito: ', error);
-                    }
-                });
-            });
+        function filterProducts(subcategory) {
+            // Hide all rows
+            $('table tbody tr').hide();
 
-            function filterProducts(subcategory) {
-                // Oculta todas las filas
-                $('table tbody tr').hide();
-
-                // Muestra las filas con la subcategoría seleccionada
-                $('table tbody tr[data-subcategory="' + subcategory + '"]').show();
-            }
-        });
+            // Show rows with the selected subcategory
+            $('table tbody tr[data-subcategory="' + subcategory + '"]').show();
+        }
     </script>
 }

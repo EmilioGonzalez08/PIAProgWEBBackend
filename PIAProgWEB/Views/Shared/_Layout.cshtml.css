@@ -39,10 +39,15 @@ button.accept-policy {
   line-height: inherit;
 }
 
+.wrapper {
+    min-height: 100%;
+    margin-bottom: -60px; /* Set to the height of the footer */
+    padding-bottom: 60px; /* Set to the height of the footer */
+}
+
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+    height: 60px; /* Set to the height of the footer */
+    background-color: #f8f9fa; /* Set your desired background color */
+    border-top: 1px solid #e9ecef; /* Optional: Add a border at the top */
+    padding-top: 20px; /* Optional: Add padding at the top of the footer */
 }

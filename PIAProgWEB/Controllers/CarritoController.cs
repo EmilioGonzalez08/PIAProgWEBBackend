@@ -1,93 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIAProgWEB.Models;
 using PIAProgWEB.Models.dbModels;
 
 namespace PIAProgWEB.Controllers
 {
-    public class CarritoesController : Controller
+    public class CarritoController : Controller
     {
         private readonly ProyectoProWebContext _context;
 
-        public CarritoesController(ProyectoProWebContext context)
+        public CarritoController(ProyectoProWebContext context)
         {
             _context = context;
         }
 
-        // GET: Carritoes
+        // GET: Carrito
         public async Task<IActionResult> Index()
         {
-            // Obtén el usuario actual (ajusta esto según tu implementación de autenticación)
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
-
-            // Si el usuario no está autenticado, redirige a la página de inicio de sesión
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            // Busca el carrito del usuario actual
-            var userCart = await _context.Carritos
-                .Include(c => c.Productio)
-                .Include(c => c.Usuario)
-                .Where(c => c.UsuarioId == user.Id)
-                .ToListAsync();
-
-            return View(userCart);
+            var proyectoProWebContext = _context.Carritos.Include(c => c.Productio).Include(c => c.Usuario);
+            return View(await proyectoProWebContext.ToListAsync());
         }
 
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddToCart(int productId)
-        {
-            var product = await _context.Productos.FindAsync(productId);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            // Obtén el usuario actual (ajusta esto según tu implementación de autenticación)
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
-
-            // Busca el carrito del usuario actual
-            var userCart = await _context.Carritos
-                .Where(c => c.UsuarioId == user.Id && c.ProductioId == productId)
-                .FirstOrDefaultAsync();
-
-            // Si el usuario no tiene este producto en el carrito, crea uno
-            if (userCart == null)
-            {
-                userCart = new Carrito
-                {
-                    UsuarioId = user.Id,
-                    ProductioId = productId,
-                    Cantidad = 1, // Ajusta esto según tus necesidades
-                    Fecha = DateTime.Now,
-                };
-
-                _context.Carritos.Add(userCart);
-            }
-            else
-            {
-                // Si el producto ya está en el carrito, aumenta la cantidad
-                userCart.Cantidad += 1; // Puedes ajustar esto según tus necesidades
-            }
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Carritoes/Details/5
+        // GET: Carrito/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Carritos == null)
@@ -107,7 +46,7 @@ namespace PIAProgWEB.Controllers
             return View(carrito);
         }
 
-        // GET: Carritoes/Create
+        // GET: Carrito/Create
         public IActionResult Create()
         {
             ViewData["ProductioId"] = new SelectList(_context.Productos, "ProductoId", "ProductoId");
@@ -115,16 +54,26 @@ namespace PIAProgWEB.Controllers
             return View();
         }
 
-        // POST: Carritoes/Create
+        // POST: Carrito/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UsuarioId,ProductioId,Cantidad,Fecha")] Carrito carrito)
+        public async Task<IActionResult> Create([Bind("UsuarioId,ProductioId,Cantidad,Fecha")] CarritoHR carrito)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(carrito);
+                Carrito carrito1 = new Carrito
+                {
+
+                    UsuarioId = carrito.UsuarioId,
+                    ProductioId = carrito.ProductioId,
+                    Cantidad = carrito.Cantidad,
+                    Fecha = carrito.Fecha
+
+                };
+
+                _context.Carritos.Add(carrito1);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -133,7 +82,7 @@ namespace PIAProgWEB.Controllers
             return View(carrito);
         }
 
-        // GET: Carritoes/Edit/5
+        // GET: Carrito/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Carritos == null)
@@ -151,7 +100,7 @@ namespace PIAProgWEB.Controllers
             return View(carrito);
         }
 
-        // POST: Carritoes/Edit/5
+        // POST: Carrito/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -188,7 +137,7 @@ namespace PIAProgWEB.Controllers
             return View(carrito);
         }
 
-        // GET: Carritoes/Delete/5
+        // GET: Carrito/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Carritos == null)
@@ -208,7 +157,7 @@ namespace PIAProgWEB.Controllers
             return View(carrito);
         }
 
-        // POST: Carritoes/Delete/5
+        // POST: Carrito/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

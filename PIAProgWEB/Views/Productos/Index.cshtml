@@ -17,7 +17,7 @@
         <option value="">All Categories</option>
         @foreach (var categoria in Model.Select(p => p.SubCategoria).Distinct())
         {
-            <option value="@categoria.Categoria">@categoria.Categoria</option>
+            <option value="@categoria.NombreSubcategoria">@categoria.NombreSubcategoria</option>
         }
     </select>
     <button type="submit">Apply Filter</button>

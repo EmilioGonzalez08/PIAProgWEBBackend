@@ -161,7 +161,7 @@
                 }
                 else
                 {
-                    <a href="#" class="add-to-cart-button">Add to Cart</a>
+                     <button class="add-to-cart-button" data-product-id="@item.ProductoId">Add to Cart</button>
                     <a href="#" class="add-to-favorites-button">Add to Favorites</a>
                 }
             </td>
@@ -174,12 +174,35 @@
 
 @section scripts {
     <script>
-        function filterProducts(subcategory) {
-            // Hide all rows
-            $('table tbody tr').hide();
+        $(document).ready(function () {
+            $('.add-to-cart-button').on('click', function () {
+                var productId = $(this).data('product-id');
 
-            // Show rows with the selected subcategory
-            $('table tbody tr[data-subcategory="' + subcategory + '"]').show();
-        }
+                // Realiza una solicitud al servidor para agregar el producto al carrito
+                $.ajax({
+                    type: 'POST',
+                    url: '/Carritoes/Index', // Reemplaza con la ruta correcta a tu acción
+                    data: { productId: productId },
+                    success: function (result) {
+                        // Maneja la respuesta del servidor (puede ser redirección, actualización de carrito, etc.)
+                        console.log(result);
+                        
+                        // Redirige al usuario a la página de carrito directamente
+                        window.location.href = '/Carritoes/Index';
+                    },
+                    error: function (error) {
+                        console.error('Error al agregar al carrito: ', error);
+                    }
+                });
+            });
+
+            function filterProducts(subcategory) {
+                // Oculta todas las filas
+                $('table tbody tr').hide();
+
+                // Muestra las filas con la subcategoría seleccionada
+                $('table tbody tr[data-subcategory="' + subcategory + '"]').show();
+            }
+        });
     </script>
 }

@@ -22,12 +22,12 @@ namespace PIAProgWEB.Controllers
         //GET: Productos
         public async Task<IActionResult> Index(string categoria)
         {
-            IQueryable<Producto> productosQuery = _context.Productos.Include(p => p.Categoria);
+            IQueryable<Producto> productosQuery = _context.Productos.Include(p => p.SubCategoria);
 
             if (!string.IsNullOrEmpty(categoria))
             {
                 categoria = categoria.ToLower(); // o .ToUpper() según tu preferencia
-                productosQuery = productosQuery.Where(p => p.Categoria.Categoria != null && p.Categoria.Categoria.ToLower() == categoria);
+                productosQuery = productosQuery.Where(p => p.SubCategoria.Categoria != null && p.SubCategoria.NombreSubcategoria.ToLower() == categoria);
             }
 
             var productos = await productosQuery.ToListAsync();
@@ -44,7 +44,7 @@ namespace PIAProgWEB.Controllers
             }
 
             var producto = await _context.Productos
-                .Include(p => p.Categoria)
+                .Include(p => p.SubCategoria)
                 .FirstOrDefaultAsync(m => m.ProductoId == id);
             if (producto == null)
             {
@@ -57,35 +57,42 @@ namespace PIAProgWEB.Controllers
         // GET: Productos/Create
         public IActionResult Create()
         {
-            ViewData["CategoriaId"] = new SelectList(_context.Categoria, "CategoriaId", "Categoria");
+            // Assuming Categoria and Subcategoria are your model classes
+            ViewData["Categorias"] = new SelectList(_context.Categoria, "CategoriaId", "Nombre");
+            ViewData["Subcategorias"] = new SelectList(_context.Subcategoria, "IdSubcategoria", "Nombre");
+
             return View();
         }
 
         // POST: Productos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductoId,NombreProducto,Descripción,Precio,CategoriaId,Imagen")] ProductosHR producto)
+        public async Task<IActionResult> Create([Bind("ProductoId,NombreProducto,Descripción,Precio,CategoriaId,IdSubcategoria,Imagen")] ProductoCreateHR producto)
         {
             if (ModelState.IsValid)
             {
-                Producto producto1 = new Producto { 
-                ProductoId = producto.ProductoId,
-                NombreProducto = producto.NombreProducto,
-                Descripción = producto.Descripción,
-                Precio = producto.Precio,
-                CategoriaId = producto.CategoriaId,
-                Imagen = producto.Imagen
-                
+                Producto producto1 = new Producto
+                {
+                    ProductoId = producto.ProductoId,
+                    NombreProducto = producto.NombreProducto,
+                    Descripción = producto.Descripción,
+                    Precio = producto.Precio,
+                    CategoriaId = producto.CategoriaId,
+                    Imagen = producto.Imagen
                 };
+
                 _context.Productos.Add(producto1);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoriaId"] = new SelectList(_context.Categoria, "CategoriaId", "CategoriaId", producto.CategoriaId);
+
+            // Populate both "Categorias" and "Subcategorias" dropdowns
+            ViewData["Categorias"] = new SelectList(_context.Categoria, "CategoriaId", "Nombre", producto.CategoriaId);
             return View(producto);
         }
+
+
+
 
         // GET: Productos/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -149,7 +156,7 @@ namespace PIAProgWEB.Controllers
             }
 
             var producto = await _context.Productos
-                .Include(p => p.Categoria)
+                .Include(p => p.SubCategoria)
                 .FirstOrDefaultAsync(m => m.ProductoId == id);
             if (producto == null)
             {

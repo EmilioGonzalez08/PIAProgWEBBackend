@@ -7,7 +7,6 @@ namespace PIAProgWEB.Models.dbModels
     {
         public Categorium()
         {
-            Productos = new HashSet<Producto>();
             Subcategoria = new HashSet<Subcategorium>();
         }
 
@@ -17,8 +16,7 @@ namespace PIAProgWEB.Models.dbModels
         [StringLength(50)]
         public string Categoria { get; set; } = null!;
 
-        [InverseProperty("Categoria")]
-        public virtual ICollection<Producto> Productos { get; set; }
+        
         [InverseProperty("Categoria")]
         public virtual ICollection<Subcategorium> Subcategoria { get; set; }
     }

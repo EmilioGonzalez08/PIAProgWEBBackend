@@ -5,6 +5,11 @@ namespace PIAProgWEB.Models.dbModels
 {
     public partial class Subcategorium
     {
+        public Subcategorium()
+        {
+            Productos = new HashSet<Producto>();
+        }
+
         [Key]
         public int IdSubcategoria { get; set; }
         [Column("CategoriaID")]
@@ -15,5 +20,8 @@ namespace PIAProgWEB.Models.dbModels
         [ForeignKey("CategoriaId")]
         [InverseProperty("Subcategoria")]
         public virtual Categorium Categoria { get; set; } = null!;
+
+        [InverseProperty("SubCategoria")]
+        public virtual ICollection<Producto> Productos { get; set; }
     }
 }

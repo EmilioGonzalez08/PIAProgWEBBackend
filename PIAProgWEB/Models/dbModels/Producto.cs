@@ -31,7 +31,7 @@ namespace PIAProgWEB.Models.dbModels
 
         [ForeignKey("CategoriaId")]
         [InverseProperty("Productos")]
-        public virtual Categorium Categoria { get; set; } = null!;
+        public virtual Subcategorium SubCategoria { get; set; } = null!;
         [InverseProperty("Productio")]
         public virtual ICollection<Carrito> Carritos { get; set; }
         [InverseProperty("Producto")]

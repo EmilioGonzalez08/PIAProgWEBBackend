@@ -4,56 +4,182 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NombreProducto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descripción)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Precio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Imagen)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubCategoria)
-            </th>
-            <th></th>
+    h1 {
+        color: #333;
+    }
+
+    .container {
+        display: flex;
+        margin: 20px;
+    }
+
+    #subcategories {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #subcategories li {
+        padding: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    #subcategories li:hover {
+        background-color: #f0f0f0;
+    }
+
+    table {
+        width: 100%;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f8f8f8;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 5px;
+    }
+
+    .action-buttons a {
+        display: inline-block;
+        margin-right: 10px;
+        padding: 8px 15px; /* Adjusted padding */
+        font-size: 14px;  /* Adjusted font size */
+        text-decoration: none;
+        color: #fff;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+     .add-to-cart-button,
+    .add-to-favorites-button {
+        display: inline-block;
+        padding: 8px 15px;
+        font-size: 14px;
+        text-decoration: none;
+        color: #fff;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .add-to-cart-button {
+        background-color: #28a745; /* Green color for add to cart button */
+        border: 1px solid #218838;
+    }
+
+    .add-to-favorites-button {
+        background-color: #007bff; /* Blue color for add to favorites button */
+        border: 1px solid #0056b3;
+    }
+
+    .add-to-cart-button:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+
+    .add-to-favorites-button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+</style>
+
+<div class="container">
+    <!-- Container for subcategories -->
+    <div style="width: 20%; padding-right: 20px;">
+        <h4>Subcategories</h4>
+        <ul id="subcategories">
+            @foreach (var subcategory in Model.Select(p => p.SubCategoria.NombreSubcategoria).Distinct())
+            {
+                <li onclick="filterProducts('@subcategory')">@subcategory</li>
+            }
+        </ul>
+    </div>
+
+    <!-- Table for products -->
+    <div style="width: 80%;">
+        @if (User.IsInRole("Admin"))
+        {
+            <p class="action-buttons">
+                <a asp-action="Create" class="btn btn-primary">Create New</a>
+            </p>
+        }
+        <table>
+            <!-- Table headers -->
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.NombreProducto)</th>
+                    <th>@Html.DisplayNameFor(model => model.Descripción)</th>
+                    <th>@Html.DisplayNameFor(model => model.Precio)</th>
+                    <th>@Html.DisplayNameFor(model => model.Imagen)</th>
+                    <th>@Html.DisplayNameFor(model => model.SubCategoria)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            
+            <!-- Table body -->
+           <tbody>
+    @foreach (var item in Model)
+    {
+        <tr data-subcategory="@item.SubCategoria.NombreSubcategoria">
+            <td>@Html.DisplayFor(modelItem => item.NombreProducto)</td>
+            <td>@Html.DisplayFor(modelItem => item.Descripción)</td>
+            <td>@Html.DisplayFor(modelItem => item.Precio)</td>
+            <td><img src="@Html.DisplayFor(modelItem => item.Imagen)" /></td>
+            <td>@Html.DisplayFor(modelItem => item.SubCategoria.NombreSubcategoria)</td>
+            <td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <p class="action-buttons">
+                        <a asp-action="Edit" asp-route-id="@item.ProductoId" class="btn btn-warning">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.ProductoId" class="btn btn-info">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.ProductoId" class="btn btn-danger">Delete</a>
+                    </p>
+                }
+                else
+                {
+                    <a href="#" class="add-to-cart-button">Add to Cart</a>
+                    <a href="#" class="add-to-favorites-button">Add to Favorites</a>
+                }
+            </td>
         </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreProducto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripción)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Precio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Imagen)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubCategoria.IdSubcategoria)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductoId">Delete</a>
-            </td>
-        </tr>
+    }
+</tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function filterProducts(subcategory) {
+            // Hide all rows
+            $('table tbody tr').hide();
+
+            // Show rows with the selected subcategory
+            $('table tbody tr[data-subcategory="' + subcategory + '"]').show();
+        }
+    </script>
 }
-    </tbody>
-</table>

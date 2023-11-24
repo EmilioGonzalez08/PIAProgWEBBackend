@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIAProgWEB.Models;
 using PIAProgWEB.Models.dbModels;
 
 namespace PIAProgWEB.Controllers
 {
+    [Authorize]
     public class ProductosController : Controller
     {
         private readonly ProyectoProWebContext _context;
@@ -44,10 +47,12 @@ namespace PIAProgWEB.Controllers
             return View(producto);
         }
 
+
+
         // GET: Productos/Create
         public IActionResult Create()
         {
-            ViewData["CategoriaId"] = new SelectList(_context.Subcategoria, "IdSubcategoria", "IdSubcategoria");
+            ViewData["CategoriaId"] = new SelectList(_context.Subcategoria, "IdSubcategoria", "NombreSubcategoria");
             return View();
         }
 
@@ -56,11 +61,23 @@ namespace PIAProgWEB.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductoId,NombreProducto,Descripción,Precio,CategoriaId,Imagen")] Producto producto)
+        public async Task<IActionResult> Create([Bind("ProductoId,NombreProducto,Descripción,Precio,CategoriaId,Imagen")] ProductosHR producto)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(producto);
+                Producto producto1 = new Producto
+                {
+
+                    ProductoId = producto.ProductoId,
+                    NombreProducto = producto.NombreProducto,
+                    Descripción = producto.Descripción,
+                    Precio = producto.Precio,
+                    CategoriaId = producto.CategoriaId,
+                    Imagen = producto.Imagen
+
+                };
+
+                _context.Productos.Add(producto1);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

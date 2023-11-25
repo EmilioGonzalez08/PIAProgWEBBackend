@@ -1,0 +1,15 @@
+﻿/* styles.css */
+
+/* Estilo para hacer que el carrusel ocupe todo el ancho de la página */
+#carouselExample {
+    width: 100%;
+}
+
+/* Estilo para centrar el texto en el carrusel */
+#carouselText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff; /* Cambia el color del texto según sea necesario */
+}

@@ -24,7 +24,10 @@ namespace PIAProgWEB.Controllers
         // GET: Productos
         public async Task<IActionResult> Index()
         {
-            var proyectoProWebContext = _context.Productos.Include(p => p.SubCategoria);
+            var proyectoProWebContext = _context.Productos
+                .Include(p => p.SubCategoria)
+                .Include(p => p.ProductoTallas); // Agregar la relación con ProductoTalla
+
             return View(await proyectoProWebContext.ToListAsync());
         }
 

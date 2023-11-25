@@ -164,6 +164,11 @@
                      <button class="add-to-cart-button" data-product-id="@item.ProductoId">Add to Cart</button>
                     <a href="#" class="add-to-favorites-button">Add to Favorites</a>
                 }
+
+                @foreach (var talla in item.ProductoTallas)
+                {
+                    <p>Tamaño: @talla.Talla, Cantidad: @talla.Cantidad</p>
+                }
             </td>
         </tr>
     }

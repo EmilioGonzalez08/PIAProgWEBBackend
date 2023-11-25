@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIAProgWEB.Models;
 using PIAProgWEB.Models.dbModels;
+using System.Security.Claims;
 
 namespace PIAProgWEB.Controllers
 {
@@ -17,6 +18,66 @@ namespace PIAProgWEB.Controllers
         public CarritoController(ProyectoProWebContext context)
         {
             _context = context;
+        }
+
+        private bool CarritoExists(int id)
+        {
+            return _context.Carritos.Any(e => e.UsuarioId == id);
+        }
+
+        [HttpPost]
+        public IActionResult AddToCart(int productId)
+        {
+            try
+            {
+                // Retrieve the current user's ID
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Ensure the user is authenticated and the user ID is not null or empty
+                if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(userId))
+                {
+                    // Check if the product is already in the user's cart
+                    var existingCartItem = _context.Carritos
+                        .FirstOrDefault(c => c.UsuarioId == int.Parse(userId) && c.ProductioId == productId);
+
+                    if (existingCartItem != null)
+                    {
+                        // If the product is already in the cart, you might want to update the quantity instead
+                        existingCartItem.Cantidad += 1;
+                    }
+                    else
+                    {
+                        // If the product is not in the cart, create a new cart item
+                        var newCartItem = new Carrito
+                        {
+                            UsuarioId = int.Parse(userId),
+                            ProductioId = productId,
+                            Cantidad = 1,
+                            Fecha = DateTime.Now // or use your preferred way to set the date
+                        };
+
+                        // Add the new cart item to the context
+                        _context.Carritos.Add(newCartItem);
+                    }
+
+                    // Save changes to the database
+                    _context.SaveChanges();
+
+                    // Return a success message
+                    return Json(new { success = true, message = "Product added to cart" });
+                }
+                else
+                {
+                    // Return an error message if the user is not authenticated or user ID is null/empty
+                    return Json(new { success = false, message = "User not authenticated" });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return an error message
+                return Json(new { success = false, message = "Error adding product to cart" });
+            }
         }
 
         // GET: Carrito
@@ -85,18 +146,21 @@ namespace PIAProgWEB.Controllers
         // GET: Carrito/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Carritos == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var carrito = await _context.Carritos.FindAsync(id);
+
             if (carrito == null)
             {
                 return NotFound();
             }
+
             ViewData["ProductioId"] = new SelectList(_context.Productos, "ProductoId", "ProductoId", carrito.ProductioId);
             ViewData["UsuarioId"] = new SelectList(_context.Users, "Id", "Id", carrito.UsuarioId);
+
             return View(carrito);
         }
 
@@ -140,7 +204,7 @@ namespace PIAProgWEB.Controllers
         // GET: Carrito/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Carritos == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -149,6 +213,7 @@ namespace PIAProgWEB.Controllers
                 .Include(c => c.Productio)
                 .Include(c => c.Usuario)
                 .FirstOrDefaultAsync(m => m.UsuarioId == id);
+
             if (carrito == null)
             {
                 return NotFound();
@@ -160,25 +225,26 @@ namespace PIAProgWEB.Controllers
         // POST: Carrito/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int usuarioId, int productioId)
         {
-            if (_context.Carritos == null)
+            var carrito = await _context.Carritos.FindAsync(usuarioId, productioId);
+
+            if (carrito == null)
             {
-                return Problem("Entity set 'ProyectoProWebContext.Carritos'  is null.");
+                return NotFound();
             }
-            var carrito = await _context.Carritos.FindAsync(id);
-            if (carrito != null)
+
+            try
             {
                 _context.Carritos.Remove(carrito);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool CarritoExists(int id)
-        {
-          return (_context.Carritos?.Any(e => e.UsuarioId == id)).GetValueOrDefault();
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return RedirectToAction(nameof(Index)); // Redirect to the index on error
+            }
         }
     }
 }

@@ -182,8 +182,11 @@
 </div>
 
 @section scripts {
-    <script>
+    <!-- Load jQuery before using it -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+    <!-- Existing script for filtering products -->
+    <script>
         function filterProducts(subcategory) {
             // Hide all rows
             $('table tbody tr').hide();
@@ -191,5 +194,34 @@
             // Show rows with the selected subcategory
             $('table tbody tr[data-subcategory="' + subcategory + '"]').show();
         }
+    </script>
+
+    <!-- New script for handling "Add to Cart" button -->
+    <script>
+        $('.add-to-cart-button').on('click', function () {
+            // Get the product ID from the data attribute
+            var productId = $(this).data('product-id');
+
+            // Call the controller action to add the product to the cart
+            $.ajax({
+                url: '/Carrito/AddToCart',  // Update the URL with your actual controller action
+                method: 'POST',
+                data: { productId: productId },
+                success: function (result) {
+                    // Handle the success response
+                    console.log('Product added to cart successfully');
+
+                    // Show success alert
+                    alert('Product added to cart successfully');
+                },
+                error: function (error) {
+                    // Handle the error response
+                    console.error('Error adding product to cart');
+
+                    // Show error alert
+                    alert('Error adding product to cart');
+                }
+            });
+        });
     </script>
 }

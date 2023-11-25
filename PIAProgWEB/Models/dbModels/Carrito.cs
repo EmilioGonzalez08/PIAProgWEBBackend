@@ -6,12 +6,10 @@ namespace PIAProgWEB.Models.dbModels
     [Table("Carrito")]
     public partial class Carrito
     {
-        [Key]
-        [Column("UsuarioID")]
+        [Key, Column("UsuarioID", Order = 0)]
         public int UsuarioId { get; set; }
 
-        [Key]
-        [Column("ProductioID")]
+        [Key, Column("ProductioID", Order = 1)]
         public int ProductioId { get; set; }
 
         public int Cantidad { get; set; }

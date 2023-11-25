@@ -165,10 +165,11 @@
                     <a href="#" class="add-to-favorites-button">Add to Favorites</a>
                 }
 
-                @foreach (var talla in item.ProductoTallas)
-                {
-                    <p>Tallas: @talla.TallaId, Cantidad: @talla.Cantidad</p>
-                }
+                            @foreach (var talla in item.ProductoTallas)
+                            {
+                                <p>Tallas: @talla.TallaId, Cantidad: @talla.Cantidad</p>
+                            }
+
             </td>
         </tr>
     }

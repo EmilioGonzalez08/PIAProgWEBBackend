@@ -36,4 +36,18 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+    <script>
+        $(document).ready(function () {
+            // Agrega un tiempo de espera para dar tiempo a que la nueva novedad se refleje en la base de datos
+            setTimeout(function () {
+                // Realiza una petición AJAX para obtener las novedades más recientes
+                $.get('@Url.Action("GetLatestNovedades", "Novedads")', function (data) {
+                    // Reemplaza el contenido de la sección de tarjetas con la información más reciente
+                    $('#novedades-container').html(data);
+                });
+            }, 1000); // Puedes ajustar el tiempo de espera según tus necesidades
+        });
+    </script>
 }

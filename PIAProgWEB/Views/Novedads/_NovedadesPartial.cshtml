@@ -1,0 +1,28 @@
+﻿@model IEnumerable<PIAProgWEB.Models.dbModels.Novedad>
+
+@foreach (var item in Model)
+{
+    <div class="card mb-4">
+        <img src="placeholder-image.jpg" class="card-img-top" alt="Imagen de la novedad">
+        <div class="card-body">
+            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Descripcion)</h5>
+
+            @if (ViewBag.ImagenesPorNovedad != null && ViewBag.ImagenesPorNovedad.ContainsKey(item.IdNovedad))
+            {
+                foreach (var imagen in ViewBag.ImagenesPorNovedad[item.IdNovedad])
+                {
+                    <img src="@imagen.Imagen" class="card-img-top mb-2" alt="Imagen de la novedad">
+                }
+            }
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="btn-group" role="group">
+                    <a asp-action="Edit" asp-route-id="@item.IdNovedad" class="btn btn-warning action-links">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.IdNovedad" class="btn btn-info action-links">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.IdNovedad" class="btn btn-danger action-links">Delete</a>
+                </div>
+            }
+        </div>
+    </div>
+}

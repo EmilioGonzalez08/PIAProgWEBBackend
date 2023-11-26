@@ -11,67 +11,56 @@
     <title>@ViewData["Title"]</title>
     <!-- Añade la siguiente línea para enlazar tu archivo CSS -->
     <link rel="stylesheet" href="~/css/novedad.css" />
+    <!-- Añade Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-    <div class="table-container">
+    <div class="container">
+        <h1 class="mt-5">Novedades</h1>
+        @if (User.IsInRole("Admin"))
+        {
+            <p>
+                <a asp-action="Create" class="btn btn-primary mt-3">Create New</a>
+            </p>
+        }
 
-        <div class="table-container">
-            <h1>Novedades</h1>
-            @if (User.IsInRole("Admin"))
+        <div class="row">
+            @foreach (var item in Model)
             {
-                <p>
-                    <a asp-action="Create" class="btn btn-primary">Create New</a>
-                </p>
-            }
-            <table>
-                <thead>
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Descripcion)
-                        </th>
-                        <th>
-                            Imagen
-                        </th>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <th>Action</th>
-                        }
-                    </tr>
-                </thead>
-                <!-- Aqui es lo que ve el usuario-->
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Descripcion)
-                            </td>
-                            <td>
-                                @if (ViewBag.ImagenesPorNovedad != null && ViewBag.ImagenesPorNovedad.ContainsKey(item.IdNovedad))
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="placeholder-image.jpg" class="card-img-top" alt="Imagen de la novedad"> <!-- Puedes cambiar "placeholder-image.jpg" con una imagen predeterminada o la primera imagen de la novedad -->
+
+                        <div class="card-body">
+                            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Descripcion)</h5>
+
+                            @if (ViewBag.ImagenesPorNovedad != null && ViewBag.ImagenesPorNovedad.ContainsKey(item.IdNovedad))
+                            {
+                                foreach (var imagen in ViewBag.ImagenesPorNovedad[item.IdNovedad])
                                 {
-                                    foreach (var imagen in ViewBag.ImagenesPorNovedad[item.IdNovedad])
-                                    {
-                                        <img src="@imagen.Imagen" class="small-image" alt="Imagen de la novedad">
-                                    }
+                                    <img src="@imagen.Imagen" class="custom-image card-img-top mb-2" alt="Imagen de la novedad">
                                 }
-                            </td>
-                                 <!-- Cosas de admin -->
-                            <td>
-                                @if (User.IsInRole("Admin"))
-                                {
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="btn-group" role="group">
                                     <a asp-action="Edit" asp-route-id="@item.IdNovedad" class="btn btn-warning action-links">Edit</a>
                                     <a asp-action="Details" asp-route-id="@item.IdNovedad" class="btn btn-info action-links">Details</a>
                                     <a asp-action="Delete" asp-route-id="@item.IdNovedad" class="btn btn-danger action-links">Delete</a>
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-
-
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
+
+    <!-- Añade jQuery y Popper.js, necesarios para Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!-- Añade Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>

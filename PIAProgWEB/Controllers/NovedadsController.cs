@@ -58,6 +58,13 @@ namespace PIAProgWEB.Controllers
 
             return View(novedad);
         }
+
+        public IActionResult GetLatestNovedades()
+        {
+            var novedades = _context.Novedads.ToList(); // Obtén las novedades más recientes desde tu base de datos
+            return PartialView("_NovedadesPartial", novedades);
+        }
+
         [Authorize(Roles = "Admin")]
         // GET: Novedads/Create
         public IActionResult Create()

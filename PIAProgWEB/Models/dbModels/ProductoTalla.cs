@@ -14,11 +14,13 @@ namespace PIAProgWEB.Models.dbModels
         public int ProductoId { get; set; }
         public int Cantidad { get; set; }
 
+
         [ForeignKey("ProductoId")]
         [InverseProperty("ProductoTallas")]
         public virtual Producto Producto { get; set; } = null!;
         [ForeignKey("TallaId")]
         [InverseProperty("ProductoTallas")]
         public virtual Talla Talla { get; set; } = null!;
+
     }
 }

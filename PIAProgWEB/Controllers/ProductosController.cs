@@ -21,12 +21,18 @@ namespace PIAProgWEB.Controllers
             _context = context;
         }
 
+        private bool ProductoExists(int id)
+        {
+            return _context.Productos.Any(e => e.ProductoId == id);
+        }
+
         // GET: Productos
         public async Task<IActionResult> Index()
         {
             var proyectoProWebContext = _context.Productos
                 .Include(p => p.SubCategoria)
-                .Include(p => p.ProductoTallas); // Agregar la relación con ProductoTalla
+                .Include(p => p.ProductoTallas)
+                    .ThenInclude(pt => pt.Talla);
 
             return View(await proyectoProWebContext.ToListAsync());
         }
@@ -152,6 +158,7 @@ namespace PIAProgWEB.Controllers
             var producto = await _context.Productos
                 .Include(p => p.SubCategoria)
                 .FirstOrDefaultAsync(m => m.ProductoId == id);
+
             if (producto == null)
             {
                 return NotFound();
@@ -165,23 +172,25 @@ namespace PIAProgWEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Productos == null)
-            {
-                return Problem("Entity set 'ProyectoProWebContext.Productos'  is null.");
-            }
             var producto = await _context.Productos.FindAsync(id);
-            if (producto != null)
+            if (producto == null)
             {
-                _context.Productos.Remove(producto);
+                return NotFound();
             }
-            
+
+            // Eliminar asignaciones de tallas
+            var productoTallas = _context.ProductoTallas.Where(pt => pt.ProductoId == id);
+            _context.ProductoTallas.RemoveRange(productoTallas);
+
+            // Eliminar registros relacionados en Carrito
+            var carritoItems = _context.Carritos.Where(ci => ci.ProductioId == id);
+            _context.Carritos.RemoveRange(carritoItems);
+
+            // Eliminar el producto
+            _context.Productos.Remove(producto);
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProductoExists(int id)
-        {
-          return (_context.Productos?.Any(e => e.ProductoId == id)).GetValueOrDefault();
         }
     }
 }

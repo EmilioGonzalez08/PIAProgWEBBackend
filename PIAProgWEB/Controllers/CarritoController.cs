@@ -20,13 +20,51 @@ namespace PIAProgWEB.Controllers
             _context = context;
         }
 
+
+
         private bool CarritoExists(int id)
         {
             return _context.Carritos.Any(e => e.UsuarioId == id);
         }
+        private object GetProductInfo(int productId)
+        {
+            var productInfo = _context.Productos
+                .Where(p => p.ProductoId == productId)
+                .Select(p => new
+                {
+                    Id = p.ProductoId,
+                    Name = p.NombreProducto,
+                    Description = p.Descripción,
+                    Price = p.Precio,
+                    // Agrega otras propiedades relevantes del producto
+                })
+                .FirstOrDefault();
 
+            return productInfo;
+        }
+
+        private object GetUpdatedCartInfo(int userId)
+        {
+            var cartInfo = _context.Carritos
+                .Where(c => c.UsuarioId == userId)
+                .Select(c => new
+                {
+                    ProductId = c.ProductioId,
+                    Quantity = c.Cantidad,
+                    Date = c.Fecha,
+                    UserId = c.UsuarioId,
+                    Price = _context.Productos
+                                .Where(p => p.ProductoId == c.ProductioId)
+                                .Select(p => p.Precio)
+                                .FirstOrDefault(),
+                    // Agrega otras propiedades relevantes del carrito
+                })
+                .ToList();
+
+            return cartInfo;
+        }
         [HttpPost]
-        public IActionResult AddToCart(int productId)
+        public IActionResult AddToCart(int productId, string selectedSize, int selectedQuantity)
         {
             try
             {
@@ -36,6 +74,12 @@ namespace PIAProgWEB.Controllers
                 // Ensure the user is authenticated and the user ID is not null or empty
                 if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(userId))
                 {
+                    // Find the product size to check availability
+                    var availableQuantity = _context.ProductoTallas
+                        .Where(pt => pt.ProductoId == productId && pt.Talla.Tamaño == selectedSize)
+                        .Select(pt => pt.Cantidad)
+                        .FirstOrDefault();
+
                     // Check if the product is already in the user's cart
                     var existingCartItem = _context.Carritos
                         .FirstOrDefault(c => c.UsuarioId == int.Parse(userId) && c.ProductioId == productId);
@@ -43,28 +87,49 @@ namespace PIAProgWEB.Controllers
                     if (existingCartItem != null)
                     {
                         // If the product is already in the cart, you might want to update the quantity instead
-                        existingCartItem.Cantidad += 1;
+                        if (existingCartItem.Cantidad + selectedQuantity <= availableQuantity)
+                        {
+                            existingCartItem.Cantidad += selectedQuantity;
+
+                            // Save changes to the database
+                            _context.SaveChanges();
+
+                            // Get updated cart information
+                            var updatedCart = GetUpdatedCartInfo(int.Parse(userId));
+
+                            // Return product and cart information
+                            return Json(new { success = true, message = "Product added to cart", product = GetProductInfo(productId), cart = updatedCart });
+                        }
                     }
                     else
                     {
                         // If the product is not in the cart, create a new cart item
-                        var newCartItem = new Carrito
+                        if (selectedQuantity <= availableQuantity)
                         {
-                            UsuarioId = int.Parse(userId),
-                            ProductioId = productId,
-                            Cantidad = 1,
-                            Fecha = DateTime.Now // or use your preferred way to set the date
-                        };
+                            var newCartItem = new Carrito
+                            {
+                                UsuarioId = int.Parse(userId),
+                                ProductioId = productId,
+                                Cantidad = selectedQuantity,
+                                Fecha = DateTime.Now // or use your preferred way to set the date
+                            };
 
-                        // Add the new cart item to the context
-                        _context.Carritos.Add(newCartItem);
+                            // Add the new cart item to the context
+                            _context.Carritos.Add(newCartItem);
+
+                            // Save changes to the database
+                            _context.SaveChanges();
+
+                            // Get updated cart information
+                            var updatedCart = GetUpdatedCartInfo(int.Parse(userId));
+
+                            // Return product and cart information
+                            return Json(new { success = true, message = "Product added to cart", product = GetProductInfo(productId), cart = updatedCart });
+                        }
                     }
 
-                    // Save changes to the database
-                    _context.SaveChanges();
-
-                    // Return a success message
-                    return Json(new { success = true, message = "Product added to cart" });
+                    // If the code reaches here, it means the quantity exceeded the available quantity
+                    return Json(new { success = false, message = "Exceeded available quantity" });
                 }
                 else
                 {
@@ -79,14 +144,28 @@ namespace PIAProgWEB.Controllers
                 return Json(new { success = false, message = "Error adding product to cart" });
             }
         }
-
         // GET: Carrito
         public async Task<IActionResult> Index()
         {
-            var proyectoProWebContext = _context.Carritos.Include(c => c.Productio).Include(c => c.Usuario);
-            return View(await proyectoProWebContext.ToListAsync());
-        }
+            // Retrieve the current user's ID
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(userId))
+            {
+                // Filter carritos for the current user
+                var proyectoProWebContext = _context.Carritos
+                    .Where(c => c.UsuarioId == int.Parse(userId))
+                    .Include(c => c.Productio)
+                    .Include(c => c.Usuario);
+
+                return View(await proyectoProWebContext.ToListAsync());
+            }
+            else
+            {
+                // Handle the case when the user is not authenticated
+                return RedirectToAction("Login", "Account");
+            }
+        }
         // GET: Carrito/Details/5
         public async Task<IActionResult> Details(int? id)
         {

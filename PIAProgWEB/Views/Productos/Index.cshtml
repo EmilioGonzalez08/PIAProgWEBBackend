@@ -30,15 +30,15 @@
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
-    #subcategories li {
-        padding: 10px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
+        #subcategories li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-    #subcategories li:hover {
-        background-color: #f0f0f0;
-    }
+            #subcategories li:hover {
+                background-color: #f0f0f0;
+            }
 
     table {
         width: 100%;
@@ -70,14 +70,14 @@
         display: inline-block;
         margin-right: 10px;
         padding: 8px 15px; /* Adjusted padding */
-        font-size: 14px;  /* Adjusted font size */
+        font-size: 14px; /* Adjusted font size */
         text-decoration: none;
         color: #fff;
         border-radius: 5px;
         transition: background-color 0.3s;
     }
 
-     .add-to-cart-button,
+    .add-to-cart-button,
     .add-to-favorites-button {
         display: inline-block;
         padding: 8px 15px;
@@ -124,7 +124,10 @@
         @if (User.IsInRole("Admin"))
         {
             <p class="action-buttons">
-                <a asp-action="Create" class="btn btn-primary">Create New</a>
+                <a asp-action="Create" class="btn btn-primary">Agregar Producto</a>
+            </p>
+            <p class="action-buttons">
+                <a asp-action="Index" asp-controller="Subcategorias" class="btn btn-primary">Agregar Subcategorias</a>
             </p>
         }
         <table>
@@ -139,41 +142,68 @@
                     <th></th>
                 </tr>
             </thead>
-            
+
             <!-- Table body -->
-           <tbody>
-    @foreach (var item in Model)
-    {
-        <tr data-subcategory="@item.SubCategoria.NombreSubcategoria">
-            <td>@Html.DisplayFor(modelItem => item.NombreProducto)</td>
-            <td>@Html.DisplayFor(modelItem => item.Descripción)</td>
-            <td>@Html.DisplayFor(modelItem => item.Precio)</td>
-            <td><img src="@Html.DisplayFor(modelItem => item.Imagen)" /></td>
-            <td>@Html.DisplayFor(modelItem => item.SubCategoria.NombreSubcategoria)</td>
-            <td>
-                @if (User.IsInRole("Admin"))
+            <tbody>
+                @foreach (var item in Model)
                 {
-                    <p class="action-buttons">
-                        <a asp-action="Edit" asp-route-id="@item.ProductoId" class="btn btn-warning">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.ProductoId" class="btn btn-info">Details</a>
-                        <a asp-action="Delete" asp-route-id="@item.ProductoId" class="btn btn-danger">Delete</a>
-                    </p>
-                }
-                else
-                {
-                     <button class="add-to-cart-button" data-product-id="@item.ProductoId">Add to Cart</button>
-                    <a href="#" class="add-to-favorites-button">Add to Favorites</a>
-                }
+                    <tr data-subcategory="@item.SubCategoria.NombreSubcategoria">
+                        <td>@Html.DisplayFor(modelItem => item.NombreProducto)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Descripción)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Precio)</td>
+                        <td><img src="@Html.DisplayFor(modelItem => item.Imagen)" /></td>
+                        <td>@Html.DisplayFor(modelItem => item.SubCategoria.NombreSubcategoria)</td>
+                        <td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <p class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@item.ProductoId" class="btn btn-warning">Edit</a>
+                                    <a asp-action="Details" asp-route-id="@item.ProductoId" class="btn btn-info">Details</a>
+                                    <a asp-action="Delete" asp-route-id="@item.ProductoId" class="btn btn-danger">Delete</a>
+                                </p>
+                            }
+                            else
+                            {
+                               <div>
+    <label for="selectedSize">Talla:</label>
+    <select name="selectedSize" class="size-dropdown">
+        @foreach (var talla in item.ProductoTallas)
+        {
+            <option value="@talla.Talla.Tamaño" data-available-quantity="@talla.Cantidad">@talla.Talla.Tamaño</option>
+        }
+    </select>
+</div>
+
+<div>
+    <label for="selectedQuantity">Cantidad:</label>
+    <select name="selectedQuantity" class="quantity-dropdown">
+        @for (int i = 1; i <= item.ProductoTallas.Min(t => t.Cantidad); i++)
+        {
+            <option value="@i">@i</option>
+        }
+    </select>
+</div>
+
+                                <button class="add-to-cart-button"
+                                data-product-id="@item.ProductoId"
+                                data-available-quantities="@Html.Raw(Json.Serialize(item.ProductoTallas.ToDictionary(t => t.Talla.Tamaño, t => t.Cantidad)))">
+                                    Add to Cart
+                                </button>
+
+<a href="#" class="add-to-favorites-button">Add to Favorites</a>
+                            }
 
                             @foreach (var talla in item.ProductoTallas)
                             {
-                                <p>Tallas: @talla.TallaId, Cantidad: @talla.Cantidad</p>
+                                <p>
+                                    Tallas: @(talla.Talla != null ? talla.Talla.Tamaño : "N/A"),
+                                    Cantidad: @talla.Cantidad
+                                </p>
                             }
-
-            </td>
-        </tr>
-    }
-</tbody>
+                        </td>
+                    </tr>
+                }
+            </tbody>
         </table>
 
         @if (User.IsInRole("Admin"))
@@ -183,7 +213,6 @@
                 <a asp-action="Index" asp-controller="ProductoTallas" class="btn btn-primary">Asignar Tallas</a>
             </p>
         }
-
     </div>
 </div>
 
@@ -202,31 +231,63 @@
         }
     </script>
 
-    <!-- New script for handling "Add to Cart" button -->
+    <!-- Updated script for handling "Add to Cart" button with dynamic availability -->
     <script>
-        $('.add-to-cart-button').on('click', function () {
-            // Get the product ID from the data attribute
-            var productId = $(this).data('product-id');
+        $(document).ready(function () {
+            $('.add-to-cart-button').on('click', function () {
+                var productId = $(this).data('product-id');
+                var currentRow = $(this).closest('tr');
+                var selectedSize = currentRow.find('select[name="selectedSize"]');
+                var selectedQuantity = parseFloat(currentRow.find('select[name="selectedQuantity"]').val());
 
-            // Call the controller action to add the product to the cart
-            $.ajax({
-                url: '/Carrito/AddToCart',  // Update the URL with your actual controller action
-                method: 'POST',
-                data: { productId: productId },
-                success: function (result) {
-                    // Handle the success response
-                    console.log('Product added to cart successfully');
+                // Obtener la cantidad disponible para la talla seleccionada
+                var availableQuantities = currentRow.find('select[name="selectedSize"] option')
+                    .map(function () { return { size: $(this).val(), quantity: $(this).data('available-quantity') }; })
+                    .get();
 
-                    // Show success alert
-                    alert('Product added to cart successfully');
-                },
-                error: function (error) {
-                    // Handle the error response
-                    console.error('Error adding product to cart');
+                // Ajustar el máximo de la cantidad al disponible para la talla seleccionada
+                var selectedSizeValue = selectedSize.val();
+                var selectedSizeAvailability = availableQuantities.find(q => q.size === selectedSizeValue);
+                selectedSize.attr('max', selectedSizeAvailability.quantity);
 
-                    // Show error alert
-                    alert('Error adding product to cart');
+                console.log('Selected Quantity:', selectedQuantity);
+                console.log('Available Quantity for selected size:', selectedSizeAvailability.quantity);
+
+                if (!isNaN(selectedQuantity)) {
+                    if (selectedQuantity <= selectedSizeAvailability.quantity) {
+                        $.ajax({
+                            url: '/Carrito/AddToCart',
+                            method: 'POST',
+                            data: {
+                                productId: productId,
+                                selectedSize: selectedSizeValue,
+                                selectedQuantity: selectedQuantity
+                            },
+                            success: function (result) {
+                                console.log(result);
+                                if (result.success) {
+                                    alert('Product added to cart successfully!');
+                                } else {
+                                    alert('Error adding product to cart. Please try again.');
+                                }
+                            },
+                            error: function () {
+                                alert('Error: Unable to add product to cart');
+                            }
+                        });
+                    } else {
+                        alert('Selected quantity exceeds available quantity. Please try again.');
+                    }
+                } else {
+                    alert('Invalid quantity. Please try again.');
                 }
+            });
+
+            // Agregar un manejador de eventos para cambiar el máximo de la cantidad al cambiar la talla
+            $('select[name="selectedSize"]').on('change', function () {
+                var selectedSizeValue = $(this).val();
+                var selectedSizeAvailability = availableQuantities.find(q => q.size === selectedSizeValue);
+                $(this).siblings('div').find('select[name="selectedQuantity"]').attr('max', selectedSizeAvailability.quantity);
             });
         });
     </script>

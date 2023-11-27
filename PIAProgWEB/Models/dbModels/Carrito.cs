@@ -13,6 +13,7 @@ namespace PIAProgWEB.Models.dbModels
         public int ProductioId { get; set; }
 
         public int Cantidad { get; set; }
+        public decimal Subtotal => Cantidad * Productio.Precio;
 
         [Column(TypeName = "date")]
         public DateTime Fecha { get; set; }

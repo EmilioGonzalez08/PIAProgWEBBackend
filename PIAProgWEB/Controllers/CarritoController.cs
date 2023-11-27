@@ -20,6 +20,75 @@ namespace PIAProgWEB.Controllers
             _context = context;
         }
 
+        [HttpPost]
+        public IActionResult RealizarCompra()
+        {
+            try
+            {
+                // Obtén el ID del usuario actual
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Asegúrate de que el usuario esté autenticado y el ID de usuario no sea nulo o vacío
+                if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(userId))
+                {
+                    // Obtén la lista de productos en el carrito
+                    var productosEnCarrito = _context.Carritos.ToList();
+
+                    // Crea una nueva orden
+                    var nuevaOrden = new Orden
+                    {
+                        Fecha = DateTime.Now,
+                        UsuarioId = int.Parse(userId),
+                        // Otras propiedades de la orden que puedas necesitar
+                    };
+
+                    // Agrega la orden a la base de datos
+                    _context.Ordens.Add(nuevaOrden);
+                    _context.SaveChanges();
+
+                    // Itera sobre los productos en el carrito y crea detalles de orden
+                    foreach (var productoEnCarrito in productosEnCarrito)
+                    {
+                        // Obtén la información del producto
+                        var productInfo = _context.Productos
+                            .Where(p => p.ProductoId == productoEnCarrito.ProductioId)
+                            .FirstOrDefault();
+
+                        // Crea un detalle de orden
+                        var detalleOrden = new DetalleOrden
+                        {
+                            OrdenId = nuevaOrden.OrdenId,
+                            ProductoId = productoEnCarrito.ProductioId,
+                            Cantidad = productoEnCarrito.Cantidad,
+                            PrecioUnitario = productInfo.Precio
+                            // Otras propiedades del detalle de orden que puedas necesitar
+                        };
+
+                        // Agrega el detalle de orden a la base de datos
+                        _context.DetalleOrdens.Add(detalleOrden);
+                    }
+
+                    // Elimina los productos del carrito después de la compra
+                    _context.Carritos.RemoveRange(productosEnCarrito);
+                    _context.SaveChanges();
+
+                    // Redirige a la página de inicio u otra página según tus necesidades
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    // Retorna un mensaje de error si el usuario no está autenticado o el ID de usuario es nulo/vacío
+                    return Json(new { success = false, message = "Usuario no autenticado" });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Registra la excepción
+                // Retorna un mensaje de error
+                return Json(new { success = false, message = "Error al realizar la compra" });
+            }
+        }
+
 
 
         private bool CarritoExists(int id)
@@ -42,6 +111,9 @@ namespace PIAProgWEB.Controllers
 
             return productInfo;
         }
+
+        
+
 
         private object GetUpdatedCartInfo(int userId)
         {

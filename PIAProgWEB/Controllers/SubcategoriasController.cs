@@ -19,6 +19,7 @@ namespace PIAProgWEB.Controllers
             _context = context;
         }
 
+
         // GET: Subcategorias
         public async Task<IActionResult> Index()
         {

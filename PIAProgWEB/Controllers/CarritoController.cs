@@ -41,6 +41,7 @@ namespace PIAProgWEB.Controllers
                         UsuarioId = int.Parse(userId),
                         // Otras propiedades de la orden que puedas necesitar
                     };
+                    nuevaOrden.EstadoOrden = 1;
 
                     // Agrega la orden a la base de datos
                     _context.Ordens.Add(nuevaOrden);

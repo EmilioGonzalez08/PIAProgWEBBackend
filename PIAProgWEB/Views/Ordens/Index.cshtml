@@ -13,6 +13,9 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.OrdenId)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Fecha)
             </th>
             <th>
@@ -27,6 +30,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrdenId)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Fecha)
             </td>

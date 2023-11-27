@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\css\estilos.css" />
+    <None Include="wwwroot\css\estilos.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

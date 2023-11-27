@@ -1,5 +1,33 @@
 ﻿body {
-    background-image: url("https://png.pngtree.com/thumb_back/fw800/background/20220531/pngtree-blurred-waterside-pavilion-forest-waterfall-blur-photo-image_24791716.jpg");
+    margin: 0;
+    padding: 0;
+    background-image: url("https://simepower.com.mx/wp-content/uploads/2020/06/iluminacion_en_el_hogar.jpg");
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    background-color: rgba(255, 255, 255, 0.8);
+    margin: auto;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Agregamos estas reglas para que el contenido ocupe todo el ancho */
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
 }

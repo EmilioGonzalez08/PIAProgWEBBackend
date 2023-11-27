@@ -8,15 +8,17 @@
 
 @if (User.IsInRole("Admin"))
 {
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-
     <label for="selectUsuario">Seleccionar Usuario:</label>
     <select id="selectUsuario">
         <!-- Opciones de usuarios se cargarán mediante Ajax -->
     </select>
 }
+
+<label for="selectOrden">Seleccionar Orden:</label>
+<select id="selectOrden">
+    <option value="0">Todas las órdenes</option>
+    <!-- Opciones de órdenes se cargarán mediante Ajax -->
+</select>
 
 <table id="ordenesTable" class="table">
     <thead>
@@ -39,12 +41,12 @@
     <tbody id="tableBody">
         @foreach (var item in Model)
         {
-            <tr data-usuario-id="@item.Usuario.Id">
+            <tr data-usuario-id="@item.Usuario.Id" data-orden-id="@item.OrdenId">
                 <td>
                     @Html.DisplayFor(modelItem => item.Fecha)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EstadoOrdenNavigation.EstadoId)
+                    @Html.DisplayFor(modelItem => item.EstadoOrdenNavigation.Estado)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Usuario.Id)
@@ -70,24 +72,68 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    console.log("Datos recibidos:", data);
+                    console.log("Datos de usuarios recibidos:", data);
 
                     var selectUsuario = $('#selectUsuario');
                     $.each(data, function (index, usuario) {
                         selectUsuario.append('<option value="' + usuario.id + '">' + usuario.nombre + '</option>');
                     });
 
-                    // Manejar el cambio en el select para filtrar las órdenes
+                    // Manejar el cambio en el select de usuarios para cargar órdenes correspondientes
                     selectUsuario.on('change', function () {
-                        var usuarioId = $(this).val();
-                        $('#tableBody tr').hide();
-                        $('#tableBody tr[data-usuario-id="' + usuarioId + '"]').show();
+                        cargarOrdenes();
                     });
+
+                    // Cargar órdenes iniciales
+                    cargarOrdenes();
                 },
                 error: function (error) {
-                    console.log("Error en la solicitud AJAX:", error);
+                    console.log("Error en la solicitud AJAX de usuarios:", error);
                 }
             });
+
+            function cargarOrdenes() {
+                var usuarioId = $('#selectUsuario').val();
+
+                // Cargar la lista de órdenes al select mediante Ajax
+                $.ajax({
+                    url: '/Ordens/ObtenerOrdenesPorUsuario?usuarioId=' + usuarioId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log("Datos de órdenes recibidos:", data);
+
+                        var selectOrden = $('#selectOrden');
+                        selectOrden.empty();
+                        selectOrden.append('<option value="0">Todas las órdenes</option>');
+
+                        $.each(data, function (index, orden) {
+                            selectOrden.append('<option value="' + orden.ordenId + '">' + orden.ordenId + '</option>');
+                        });
+
+                        // Manejar el cambio en el select de órdenes para filtrar las órdenes
+                        selectOrden.on('change', function () {
+                            var ordenId = $(this).val();
+                            filtrarOrdenes(usuarioId, ordenId);
+                        });
+                    },
+                    error: function (error) {
+                        console.log("Error en la solicitud AJAX de órdenes:", error);
+                    }
+                });
+            }
+
+            function filtrarOrdenes(usuarioId, ordenId) {
+                $('#tableBody tr').hide();
+
+                if (ordenId === '0') {
+                    // Mostrar todas las órdenes del usuario seleccionado
+                    $('#tableBody tr[data-usuario-id="' + usuarioId + '"]').show();
+                } else {
+                    // Mostrar solo la orden seleccionada
+                    $('#tableBody tr[data-usuario-id="' + usuarioId + '"][data-orden-id="' + ordenId + '"]').show();
+                }
+            }
         });
     </script>
 </table>

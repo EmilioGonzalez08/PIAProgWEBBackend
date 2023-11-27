@@ -1,13 +1,16 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
+@section Styles {
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css" href="~/css/nuevo.css">
+}
 <div class="jumbotron text-center">
     <h1 class="display-4 font-weight-bold">Descubre la Moda con Historia en 1989</h1>
     <p class="lead">Donde cada prenda cuenta una historia única, una pieza de tiempo amada antes y lista para comenzar un nuevo capítulo contigo.</p>
     <div class="container mt-4">
         <!-- Carrusel de imágenes -->
-        <div id="carouselExample" class="carousel slide" data-ride="carousel">
+        <div id="carouselExample" class="carousel slide" data-ride="carousel" data-interval="3000" data-wrap="true" data-pause="hover" data-controls="false">
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <img src="https://img.freepik.com/fotos-premium/fascinacion-calzado-explorando-mundo-calzado_925962-19624.jpg" class="d-block w-100" alt="Imagen 1">
@@ -28,14 +31,6 @@
                     <img src="https://www.10wallpaper.com/wallpaper/1366x768/1411/Miranda_Kerr_Model-photo_HD_Wallpapers_1366x768.jpg" class="d-block w-100" alt="Imagen 6">
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Siguiente</span>
-            </button>
             <!-- Bloque de texto con estilos adicionales -->
             <div id="carouselText" class="text-right p-4" style="background-color: rgba(0, 0, 0, 0.7); color: #fff;">
                 <p class="font-italic">

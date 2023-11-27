@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIAProgWEB.Models.dbModels;
@@ -8,19 +9,49 @@ namespace PIAProgWEB.Controllers
     public class OrdensController : Controller
     {
         private readonly ProyectoProWebContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public OrdensController(ProyectoProWebContext context)
+        public OrdensController(ProyectoProWebContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
+        }
+
+        [HttpGet]
+        public IActionResult ObtenerUsuarios()
+        {
+            var usuarios = _context.Users.Select(u => new
+            {
+                Id = u.Id,
+                Nombre = u.UserName // Ajusta esto según la propiedad que desees mostrar en el select
+            }).ToList();
+
+            return Json(usuarios);
         }
 
         // GET: Ordens
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? userId)
         {
-            var proyectoProWebContext = _context.Ordens.Include(o => o.EstadoOrdenNavigation).Include(o => o.Usuario);
-            return View(await proyectoProWebContext.ToListAsync());
-        }
+            ViewBag.UserList = new SelectList(await _context.Users.ToListAsync(), "Id", "UserName");
 
+            // Obtener el usuario actual
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var query = _context.Ordens.Include(o => o.EstadoOrdenNavigation).Include(o => o.Usuario).AsQueryable();
+
+            // Verificar si el usuario actual es un administrador
+            var isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
+
+            // Filtrar las órdenes según el rol del usuario
+            if (!isAdmin)
+            {
+                // Si no es un administrador, mostrar solo las órdenes del usuario actual
+                query = query.Where(o => o.UsuarioId == currentUser.Id);
+            }
+
+            var proyectoProWebContext = await query.ToListAsync();
+            return View(proyectoProWebContext);
+        }
         // GET: Ordens/Details/5
         public async Task<IActionResult> Details(int? id)
         {

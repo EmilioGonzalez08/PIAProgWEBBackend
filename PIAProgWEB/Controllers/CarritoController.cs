@@ -55,6 +55,24 @@ namespace PIAProgWEB.Controllers
                             .Where(p => p.ProductoId == productoEnCarrito.ProductioId)
                             .FirstOrDefault();
 
+                        // Obtén la información del producto-talla
+                        var productoTalla = _context.ProductoTallas
+                            .Include(pt => pt.Talla) // Cargar la entidad relacionada Talla
+                            .Where(pt => pt.ProductoId == productoEnCarrito.ProductioId)
+                            .FirstOrDefault();
+
+                        // Asegúrate de que haya suficientes productos disponibles
+                        if (productoTalla != null && productoTalla.Cantidad >= productoEnCarrito.Cantidad)
+                        {
+                            // Actualiza la cantidad disponible en el producto-talla
+                            productoTalla.Cantidad -= productoEnCarrito.Cantidad;
+                        }
+                        else
+                        {
+                            // Retorna un mensaje de error si no hay suficientes productos disponibles
+                            return Json(new { success = false, message = "No hay suficientes productos disponibles" });
+                        }
+
                         // Crea un detalle de orden
                         var detalleOrden = new DetalleOrden
                         {
@@ -71,6 +89,8 @@ namespace PIAProgWEB.Controllers
 
                     // Elimina los productos del carrito después de la compra
                     _context.Carritos.RemoveRange(productosEnCarrito);
+
+                    // Guarda los cambios en la base de datos después de actualizar la cantidad disponible
                     _context.SaveChanges();
 
                     // Redirige a la página de inicio u otra página según tus necesidades
@@ -89,7 +109,6 @@ namespace PIAProgWEB.Controllers
                 return Json(new { success = false, message = "Error al realizar la compra" });
             }
         }
-
 
 
         private bool CarritoExists(int id)

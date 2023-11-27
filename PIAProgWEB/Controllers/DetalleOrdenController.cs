@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +13,46 @@ namespace PIAProgWEB.Controllers
     public class DetalleOrdenController : Controller
     {
         private readonly ProyectoProWebContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DetalleOrdenController(ProyectoProWebContext context)
+        public DetalleOrdenController(ProyectoProWebContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: DetalleOrden
         public async Task<IActionResult> Index()
         {
-            var proyectoProWebContext = _context.DetalleOrdens.Include(d => d.Orden).Include(d => d.Producto);
-            return View(await proyectoProWebContext.ToListAsync());
+            // Get the currently logged-in user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                // User not found, handle accordingly (redirect to login, show an error, etc.)
+                return RedirectToAction("Login");
+            }
+
+            // Check if the user is in the "Admin" role
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+            IQueryable<DetalleOrden> detalleOrdens;
+
+            if (isAdmin)
+            {
+                // Admin can see all orders
+                detalleOrdens = _context.DetalleOrdens.Include(d => d.Orden).Include(d => d.Producto);
+            }
+            else
+            {
+                // Regular user can only see their own orders
+                detalleOrdens = _context.DetalleOrdens
+                    .Where(d => d.Orden.UsuarioId == user.Id)
+                    .Include(d => d.Orden)  // Include the Orden navigation property
+                    .Include(d => d.Producto);
+            }
+
+            return View(await detalleOrdens.ToListAsync());
         }
 
         // GET: DetalleOrden/Details/5

@@ -9,45 +9,80 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Cantidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrecioUnitario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Orden)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Producto)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cantidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Producto.Precio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Orden.OrdenId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Producto.NombreProducto)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
+
+<label for="selectOrden">Seleccionar Orden:</label>
+<select id="selectOrden" class="initial-load">
+    <option value="0">Todas las Órdenes</option>
+    @foreach (var order in Model.Select(item => item.Orden.OrdenId).Distinct())
+    {
+        <option value="@order">@order</option>
+    }
+</select>
+
+@foreach (var order in Model.Select(item => item.Orden.OrdenId).Distinct())
+{
+    <table class="table" id="ordenTable_@order" style="display: none;">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cantidad)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PrecioUnitario)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Orden)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Producto)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Where(detalle => detalle.Orden.OrdenId == order))
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cantidad)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Producto.Precio)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Orden.OrdenId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Producto.NombreProducto)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
-    </tbody>
-</table>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Mostrar todas las tablas al cargar la página
+        $('[id^="ordenTable_"]').show();
+
+        // Manejar el cambio en el select para mostrar/ocultar las tablas según el número de orden seleccionado
+        $('#selectOrden').on('change', function () {
+            var selectedOrden = $(this).val();
+            if (selectedOrden === '0') {
+                // Mostrar todas las tablas si se selecciona la opción "Todas las Órdenes"
+                $('[id^="ordenTable_"]').show();
+            } else {
+                // Mostrar la tabla correspondiente y ocultar las demás
+                $('[id^="ordenTable_"]').hide();
+                $('#ordenTable_' + selectedOrden).show();
+            }
+        });
+    });
+</script>

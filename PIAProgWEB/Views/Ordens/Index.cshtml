@@ -1,70 +1,98 @@
 ﻿@model IEnumerable<PIAProgWEB.Models.dbModels.Orden>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Crear Ordenes";
 }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    @section Styles {
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+WyFV8C5N5z1hSZ9tl/hbYUpJERuH6LZfw" crossorigin="anonymous">
 
-<h1>Index</h1>
+        <link rel="stylesheet" type="text/css" href="~/css/ordns.css">
+    }
+</head>
+<body>
 
-@if (User.IsInRole("Admin"))
-{
-    <label for="selectUsuario">Seleccionar Usuario:</label>
-    <select id="selectUsuario">
-        <!-- Opciones de usuarios se cargarán mediante Ajax -->
-    </select>
-    <a asp-action="Create" asp-controller="EstadoOrden">Agregar Estados de Orden</a>
-}
+    <h1>Ordenes</h1>
 
-<label for="selectOrden">Seleccionar Orden:</label>
-<select id="selectOrden">
-    <option value="0">Todas las órdenes</option>
-    <!-- Opciones de órdenes se cargarán mediante Ajax -->
-</select>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="form-group">
+            <label for="selectUsuario">Seleccionar Usuario:</label>
+            <select id="selectUsuario" class="form-control">
+                <!-- Opciones de usuarios se cargarán mediante Ajax -->
+            </select>
+            <a asp-action="Create" asp-controller="EstadoOrden" class="btn btn-primary mt-2">Agregar Estados de Orden</a>
+        </div>
+    }
 
-<table id="ordenesTable" class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Fecha)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EstadoOrdenNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Usuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrdenId)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="tableBody">
-        @foreach (var item in Model)
-        {
-            <tr data-usuario-id="@item.Usuario.Id" data-orden-id="@item.OrdenId">
-                <td>
-                    @Html.DisplayFor(modelItem => item.Fecha)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EstadoOrdenNavigation.Estado)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Usuario.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrdenId)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.OrdenId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.OrdenId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.OrdenId">Delete</a>
-                </td>
+    <div class="form-group">
+        <label for="selectOrden">Seleccionar Orden:</label>
+        <select id="selectOrden" class="form-control">
+            <option value="0">Todas las órdenes</option>
+            <!-- Opciones de órdenes se cargarán mediante Ajax -->
+        </select>
+    </div>
+
+    <table id="ordenesTable" class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EstadoOrdenNavigation)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Usuario)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OrdenId)
+                </th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th>Acciones</th>
+                }
+                
             </tr>
-        }
-    </tbody>
+        </thead>
+        <tbody id="tableBody">
+            @foreach (var item in Model)
+            {
+                <tr data-usuario-id="@item.Usuario.Id" data-orden-id="@item.OrdenId">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EstadoOrdenNavigation.Estado)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Usuario.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OrdenId)
+                    </td>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.OrdenId" class="btn btn-info btn-sm">Editar</a>
+                            <a asp-action="Details" asp-route-id="@item.OrdenId" class="btn btn-success btn-sm">Detalles</a>
+                            <a asp-action="Delete" asp-route-id="@item.OrdenId" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    }
+            
+                </tr>
+            }
+        </tbody>
+    </table>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+WyFV8C5N5z1hSZ9tl/hbYUpJERuH6LZfw" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function () {
             // Cargar la lista de usuarios al select mediante Ajax
@@ -137,4 +165,6 @@
             }
         });
     </script>
-</table>
+
+</body>
+</html>

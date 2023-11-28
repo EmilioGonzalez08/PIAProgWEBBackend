@@ -4,11 +4,8 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Carrito</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -56,8 +53,6 @@
                     @Html.DisplayFor(modelItem => item.Subtotal)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ })
-                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ })
                     @Html.ActionLink("Delete", "Delete", new { id = item.UsuarioId })
                 </td>
             </tr>

@@ -31,3 +31,7 @@
     margin-right: auto;
     margin-left: auto;
 }
+h1 {
+    color: transparent;
+    text-shadow: 0 0 0 #000; /* Asegura que no hay sombra visible */
+}

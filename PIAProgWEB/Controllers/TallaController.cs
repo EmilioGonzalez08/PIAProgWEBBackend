@@ -61,8 +61,11 @@ namespace PIAProgWEB.Controllers
             {
                 _context.Add(talla);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                // Redirige a la acción Index del controlador Productos
+                return RedirectToAction("Index", "Productos");
             }
+
             return View(talla);
         }
 

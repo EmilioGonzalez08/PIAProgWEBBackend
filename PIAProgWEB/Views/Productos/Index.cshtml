@@ -110,9 +110,9 @@
 
                 @if (User.IsInRole("Admin"))
                 {
-                    <!-- Button for Admin to redirect to ProductoTallas -->
+                    // Button for Admin to redirect to ProductoTallas 
                     <div class="action-buttons">
-                        <a asp-action="Index" asp-controller="ProductoTallas" class="btn btn-primary">Asignar Tallas</a>
+                        <a asp-action="Create" asp-controller="ProductoTallas" class="btn btn-primary">Asignar Tallas</a>
                     </div>
                 }
             </div>

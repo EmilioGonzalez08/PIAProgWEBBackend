@@ -178,6 +178,10 @@ namespace PIAProgWEB.Controllers
                 return NotFound();
             }
 
+            // Eliminar registros relacionados en Detalle_orden
+            var detallesOrden = _context.DetalleOrdens.Where(d => d.ProductoId == id);
+            _context.DetalleOrdens.RemoveRange(detallesOrden);
+
             // Eliminar asignaciones de tallas
             var productoTallas = _context.ProductoTallas.Where(pt => pt.ProductoId == id);
             _context.ProductoTallas.RemoveRange(productoTallas);

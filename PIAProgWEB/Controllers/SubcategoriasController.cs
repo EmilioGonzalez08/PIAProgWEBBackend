@@ -64,20 +64,21 @@ namespace PIAProgWEB.Controllers
             {
                 Subcategorium subcategorium1 = new Subcategorium
                 {
-
                     IdSubcategoria = subcategorium.IdSubcategoria,
                     CategoriaId = subcategorium.CategoriaId,
                     NombreSubcategoria = subcategorium.NombreSubcategoria
-
                 };
+
                 _context.Subcategoria.Add(subcategorium1);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                // Redirige a la acción Index del controlador Productos
+                return RedirectToAction("Index", "Productos");
             }
+
             ViewData["CategoriaId"] = new SelectList(_context.Categoria, "CategoriaId", "CategoriaId", subcategorium.CategoriaId);
             return View(subcategorium);
         }
-
         // GET: Subcategorias/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

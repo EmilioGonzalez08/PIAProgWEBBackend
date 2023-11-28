@@ -119,7 +119,7 @@ namespace PIAProgWEB.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdNovedad,Descripcion,IdEstacion")] Novedad novedad)
+        public async Task<IActionResult> Edit(int id, [Bind("IdNovedad,Descripcion,IdEstacion")] NovedasHR novedad)
         {
             if (id != novedad.IdNovedad)
             {
@@ -128,9 +128,16 @@ namespace PIAProgWEB.Controllers
 
             if (ModelState.IsValid)
             {
+                Novedad novedad1 = new Novedad
+                {
+                    IdNovedad = novedad.IdNovedad,
+                    Descripcion = novedad.Descripcion,
+                    IdEstacion = novedad.IdEstacion,
+
+                };
                 try
                 {
-                    _context.Update(novedad);
+                    _context.Update(novedad1);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
